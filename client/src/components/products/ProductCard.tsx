@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, StarHalf } from "lucide-react";
 import { Product } from "@shared/schema";
 import { motion } from "framer-motion";
+import { useCart } from "@/lib/hooks/useCart";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +12,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, className = "" }: ProductCardProps) => {
+  const { dispatch } = useCart();
+  const { toast } = useToast();
   // Function to render stars based on rating
   const renderRating = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -83,7 +87,17 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
               product.price.toLocaleString()
             )}
           </span>
-          <Button size="icon" className="bg-accent hover:bg-accent/90 text-white rounded-full">
+          <Button 
+            size="icon" 
+            className="bg-accent hover:bg-accent/90 text-white rounded-full"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch({ type: 'ADD_ITEM', payload: product });
+              toast({
+                description: "Added to cart successfully",
+              });
+            }}
+          >
             <ShoppingCart className="h-4 w-4" />
           </Button>
         </div>
