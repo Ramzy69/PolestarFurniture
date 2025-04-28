@@ -89,11 +89,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create inquiry
   app.post("/api/inquiries", async (req: Request, res: Response) => {
     try {
-      // Validate request body
-      const validatedData = insertInquirySchema.parse({
-        ...req.body,
-        createdAt: new Date().toISOString(),
-      });
+      // Validate request body (we don't need to add createdAt as it's handled by the database)
+      const validatedData = insertInquirySchema.parse(req.body);
       
       const inquiry = await storage.createInquiry(validatedData);
       res.status(201).json(inquiry);

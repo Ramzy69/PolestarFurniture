@@ -6,8 +6,14 @@ import {
   Category,
   InsertCategory,
   Inquiry,
-  InsertInquiry
+  InsertInquiry,
+  users,
+  products,
+  categories,
+  inquiries
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, like, and, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -38,33 +44,172 @@ export interface IStorage {
   // Inquiry operations
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
   getInquiries(): Promise<Inquiry[]>;
+  
+  // Initialization
+  initializeData(): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private products: Map<number, Product>;
-  private categories: Map<number, Category>;
-  private inquiries: Map<number, Inquiry>;
-  private userId: number;
-  private productId: number;
-  private categoryId: number;
-  private inquiryId: number;
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
 
-  constructor() {
-    this.users = new Map();
-    this.products = new Map();
-    this.categories = new Map();
-    this.inquiries = new Map();
-    this.userId = 1;
-    this.productId = 1;
-    this.categoryId = 1;
-    this.inquiryId = 1;
-    
-    // Initialize with some categories
-    this.initializeData();
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        fullName: insertUser.fullName || null,
+        role: insertUser.role || null
+      })
+      .returning();
+    return user;
   }
   
-  private initializeData() {
+  async getProducts(options: { 
+    categoryId?: number; 
+    featured?: boolean; 
+    limit?: number;
+    offset?: number;
+    search?: string;
+  } = {}): Promise<Product[]> {
+    let query = db.select().from(products);
+    const conditions = [];
+    
+    if (options.categoryId) {
+      conditions.push(eq(products.categoryId, options.categoryId));
+    }
+    
+    if (options.featured) {
+      conditions.push(eq(products.featured, 1));
+    }
+    
+    if (options.search) {
+      conditions.push(
+        sql`(${products.name} ILIKE ${`%${options.search}%`} OR ${products.description} ILIKE ${`%${options.search}%`})`
+      );
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    // Apply pagination if provided
+    if (options.limit) {
+      query = query.limit(options.limit);
+      
+      if (options.offset !== undefined) {
+        query = query.offset(options.offset);
+      }
+    }
+    
+    return await query;
+  }
+  
+  async getProductById(id: number): Promise<Product | undefined> {
+    const result = await db.select().from(products).where(eq(products.id, id));
+    return result[0];
+  }
+  
+  async getProductBySlug(slug: string): Promise<Product | undefined> {
+    const result = await db.select().from(products).where(eq(products.slug, slug));
+    return result[0];
+  }
+  
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db
+      .insert(products)
+      .values({
+        ...insertProduct,
+        description: insertProduct.description || null,
+        discountedPrice: insertProduct.discountedPrice || null,
+        featured: insertProduct.featured || null,
+        inStock: insertProduct.inStock || null,
+        rating: insertProduct.rating || null,
+        badges: insertProduct.badges || null,
+        gallery: insertProduct.gallery || null
+      })
+      .returning();
+    return product;
+  }
+  
+  async updateProduct(id: number, updateProduct: Partial<InsertProduct>): Promise<Product | undefined> {
+    const [product] = await db
+      .update(products)
+      .set(updateProduct)
+      .where(eq(products.id, id))
+      .returning();
+    return product;
+  }
+  
+  async deleteProduct(id: number): Promise<boolean> {
+    const result = await db
+      .delete(products)
+      .where(eq(products.id, id))
+      .returning({ id: products.id });
+    return result.length > 0;
+  }
+  
+  async getCategories(): Promise<Category[]> {
+    return await db.select().from(categories);
+  }
+  
+  async getCategoryById(id: number): Promise<Category | undefined> {
+    const result = await db.select().from(categories).where(eq(categories.id, id));
+    return result[0];
+  }
+  
+  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
+    const result = await db.select().from(categories).where(eq(categories.slug, slug));
+    return result[0];
+  }
+  
+  async createCategory(insertCategory: InsertCategory): Promise<Category> {
+    const [category] = await db
+      .insert(categories)
+      .values({
+        ...insertCategory,
+        description: insertCategory.description || null,
+        imageUrl: insertCategory.imageUrl || null
+      })
+      .returning();
+    return category;
+  }
+  
+  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
+    // Remove createdAt from data since it's set by defaultNow() in the schema
+    const { createdAt, ...inquiryData } = insertInquiry as any;
+    
+    const [inquiry] = await db
+      .insert(inquiries)
+      .values({
+        ...inquiryData,
+        phone: inquiryData.phone || null,
+        company: inquiryData.company || null,
+        interest: inquiryData.interest || null
+      })
+      .returning();
+    return inquiry;
+  }
+  
+  async getInquiries(): Promise<Inquiry[]> {
+    return await db.select().from(inquiries).orderBy(desc(inquiries.createdAt));
+  }
+  
+  async initializeData(): Promise<void> {
+    // Check if we already have data
+    const existingCategories = await this.getCategories();
+    if (existingCategories.length > 0) {
+      console.log("Database already contains data, skipping initialization");
+      return;
+    }
+    
     // Add default categories
     const categoriesData: InsertCategory[] = [
       { 
@@ -100,7 +245,11 @@ export class MemStorage implements IStorage {
     ];
     
     // Add categories
-    categoriesData.forEach(cat => this.createCategory(cat));
+    const createdCategories = [];
+    for (const cat of categoriesData) {
+      const category = await this.createCategory(cat);
+      createdCategories.push(category);
+    }
     
     // Add sample products
     const productsData: InsertProduct[] = [
@@ -204,126 +353,10 @@ export class MemStorage implements IStorage {
     ];
     
     // Add products
-    productsData.forEach(prod => this.createProduct(prod));
-  }
-  
-  // User operations
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
-  }
-  
-  // Product operations
-  async getProducts(options: { 
-    categoryId?: number; 
-    featured?: boolean; 
-    limit?: number;
-    offset?: number;
-    search?: string;
-  } = {}): Promise<Product[]> {
-    let products = Array.from(this.products.values());
-    
-    if (options.categoryId) {
-      products = products.filter(p => p.categoryId === options.categoryId);
+    for (const prod of productsData) {
+      await this.createProduct(prod);
     }
-    
-    if (options.featured) {
-      products = products.filter(p => p.featured === 1);
-    }
-    
-    if (options.search) {
-      const searchLower = options.search.toLowerCase();
-      products = products.filter(p => 
-        p.name.toLowerCase().includes(searchLower) || 
-        (p.description && p.description.toLowerCase().includes(searchLower))
-      );
-    }
-    
-    // Apply pagination if provided
-    if (options.limit && options.offset !== undefined) {
-      products = products.slice(options.offset, options.offset + options.limit);
-    } else if (options.limit) {
-      products = products.slice(0, options.limit);
-    }
-    
-    return products;
-  }
-  
-  async getProductById(id: number): Promise<Product | undefined> {
-    return this.products.get(id);
-  }
-  
-  async getProductBySlug(slug: string): Promise<Product | undefined> {
-    return Array.from(this.products.values()).find(
-      (product) => product.slug === slug,
-    );
-  }
-  
-  async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const id = this.productId++;
-    const product: Product = { ...insertProduct, id };
-    this.products.set(id, product);
-    return product;
-  }
-  
-  async updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined> {
-    const existingProduct = this.products.get(id);
-    if (!existingProduct) return undefined;
-    
-    const updatedProduct = { ...existingProduct, ...product };
-    this.products.set(id, updatedProduct);
-    return updatedProduct;
-  }
-  
-  async deleteProduct(id: number): Promise<boolean> {
-    return this.products.delete(id);
-  }
-  
-  // Category operations
-  async getCategories(): Promise<Category[]> {
-    return Array.from(this.categories.values());
-  }
-  
-  async getCategoryById(id: number): Promise<Category | undefined> {
-    return this.categories.get(id);
-  }
-  
-  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
-    return Array.from(this.categories.values()).find(
-      (category) => category.slug === slug,
-    );
-  }
-  
-  async createCategory(insertCategory: InsertCategory): Promise<Category> {
-    const id = this.categoryId++;
-    const category: Category = { ...insertCategory, id };
-    this.categories.set(id, category);
-    return category;
-  }
-  
-  // Inquiry operations
-  async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
-    const id = this.inquiryId++;
-    const inquiry: Inquiry = { ...insertInquiry, id };
-    this.inquiries.set(id, inquiry);
-    return inquiry;
-  }
-  
-  async getInquiries(): Promise<Inquiry[]> {
-    return Array.from(this.inquiries.values());
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

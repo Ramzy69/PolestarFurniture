@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, doublePrecision, timestamp, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Product Categories
 export const categories = pgTable("categories", {
@@ -28,12 +29,19 @@ export const products = pgTable("products", {
   discountedPrice: doublePrecision("discounted_price"),
   imageUrl: text("image_url").notNull(),
   gallery: text("gallery").array(),
-  categoryId: integer("category_id").notNull(),
+  categoryId: integer("category_id").notNull().references(() => categories.id, { onDelete: 'cascade' }),
   featured: integer("featured").default(0),
   inStock: integer("in_stock").default(1),
   rating: doublePrecision("rating").default(0),
   badges: text("badges").array(),
 });
+
+export const productsRelations = relations(products, ({ one }) => ({
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+}));
 
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
@@ -51,11 +59,12 @@ export const inquiries = pgTable("inquiries", {
   company: text("company"),
   interest: text("interest"),
   message: text("message").notNull(),
-  createdAt: text("created_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const insertInquirySchema = createInsertSchema(inquiries).omit({
   id: true,
+  createdAt: true,
 });
 
 export type Inquiry = typeof inquiries.$inferSelect;
@@ -77,3 +86,8 @@ export const insertUserSchema = createInsertSchema(users).omit({
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+
+// Relations
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
