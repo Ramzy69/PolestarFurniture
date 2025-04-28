@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Star, StarHalf } from "lucide-react";
 import { Product } from "@shared/schema";
 import { motion } from "framer-motion";
-import { useCart } from "@/lib/hooks/useCart";
-import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -12,8 +10,6 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, className = "" }: ProductCardProps) => {
-  const { dispatch } = useCart();
-  const { toast } = useToast();
   // Function to render stars based on rating
   const renderRating = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -60,11 +56,10 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
-          <h3 
-            className="font-montserrat font-semibold text-lg cursor-pointer"
-            onClick={() => window.location.href = `/products/${product.slug}`}
-          >
-            {product.name}
+          <h3 className="font-montserrat font-semibold text-lg">
+            <Link href={`/products/${product.slug}`}>
+              {product.name}
+            </Link>
           </h3>
           <div className="flex">
             {renderRating(product.rating || 0)}
@@ -88,17 +83,7 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
               product.price.toLocaleString()
             )}
           </span>
-          <Button 
-            size="icon" 
-            className="bg-accent hover:bg-accent/90 text-white rounded-full"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch({ type: 'ADD_ITEM', payload: product });
-              toast({
-                description: "Added to cart successfully",
-              });
-            }}
-          >
+          <Button size="icon" className="bg-accent hover:bg-accent/90 text-white rounded-full">
             <ShoppingCart className="h-4 w-4" />
           </Button>
         </div>
