@@ -52,7 +52,6 @@ const Contact = () => {
       const res = await apiRequest("POST", "/api/inquiries", {
         ...data,
         interest: "general",  // set a default interest for contact form
-        createdAt: new Date().toISOString(),
       });
       return res.json();
     },

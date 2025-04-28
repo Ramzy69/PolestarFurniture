@@ -57,10 +57,7 @@ const InquiryForm = () => {
 
   const inquiryMutation = useMutation({
     mutationFn: async (data: InquiryFormValues) => {
-      const res = await apiRequest("POST", "/api/inquiries", {
-        ...data,
-        createdAt: new Date().toISOString(),
-      });
+      const res = await apiRequest("POST", "/api/inquiries", data);
       return res.json();
     },
     onSuccess: () => {
