@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
@@ -19,11 +19,11 @@ const ProductDetail = () => {
   });
   
   // Set active image when product data is loaded
-  useState(() => {
+  useEffect(() => {
     if (product && product.imageUrl && !activeImage) {
       setActiveImage(product.imageUrl);
     }
-  });
+  }, [product, activeImage]);
   
   // Function to render stars based on rating
   const renderRating = (rating: number) => {

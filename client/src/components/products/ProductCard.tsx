@@ -41,13 +41,13 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       whileHover={{ y: -5 }}
     >
       <div className="relative h-64 overflow-hidden">
-        <Link href={`/products/${product.slug}`}>
+        <div onClick={() => window.location.href = `/products/${product.slug}`} className="cursor-pointer">
           <img 
             src={product.imageUrl} 
             alt={product.name} 
             className="product-image w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-        </Link>
+        </div>
         {product.badges && product.badges.length > 0 && (
           <span className="absolute top-3 left-3 bg-accent text-white text-xs font-montserrat py-1 px-2 rounded">
             {product.badges[0]}
