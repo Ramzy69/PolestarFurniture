@@ -58,8 +58,10 @@ const ProductDetail = () => {
           <p className="text-neutral-500 dark:text-neutral-400 mb-6">
             The product you're looking for doesn't exist or an error occurred.
           </p>
-          <Button asChild>
-            <Link href="/products">Back to Products</Link>
+          <Button 
+            onClick={() => window.location.href = "/products"}
+          >
+            Back to Products
           </Button>
         </div>
       </div>
@@ -78,16 +80,15 @@ const ProductDetail = () => {
       
       <section className="py-12 bg-white dark:bg-primary/95">
         <div className="container mx-auto px-4">
-          <Button 
-            variant="ghost" 
-            className="mb-8" 
-            asChild
-          >
-            <Link href="/products">
+          <div className="mb-8">
+            <button 
+              className="inline-flex items-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent/10 h-10 px-4 py-2 rounded-md"
+              onClick={() => window.location.href = "/products"}
+            >
               <ChevronLeft className="h-4 w-4 mr-2" />
               Back to Products
-            </Link>
-          </Button>
+            </button>
+          </div>
           
           {isLoading ? (
             <div className="flex flex-col lg:flex-row gap-12">

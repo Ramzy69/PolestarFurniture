@@ -71,27 +71,29 @@ const Header = () => {
       <nav className="container mx-auto py-4 px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <div 
+            className="flex items-center cursor-pointer" 
+            onClick={() => window.location.href = "/"}
+          >
             <span className="text-2xl font-bold font-montserrat text-primary dark:text-white">
               POLESTAR<span className="text-accent">.</span>
             </span>
-          </Link>
+          </div>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <Link href="/">
-                    <NavigationMenuLink 
-                      className={cn(
-                        "font-montserrat font-semibold hover:text-accent transition-colors",
-                        location === "/" && "text-accent"
-                      )}
-                    >
-                      Home
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink 
+                    className={cn(
+                      "font-montserrat font-semibold hover:text-accent transition-colors",
+                      location === "/" && "text-accent"
+                    )}
+                    onClick={() => window.location.href = "/"}
+                  >
+                    Home
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
@@ -102,52 +104,48 @@ const Header = () => {
                     <ul className="grid w-[200px] gap-2 p-2">
                       {productCategories.map((category) => (
                         <li key={category.name}>
-                          <Link href={category.href}>
-                            <NavigationMenuLink 
-                              className="block px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-md"
-                            >
-                              {category.name}
-                            </NavigationMenuLink>
-                          </Link>
+                          <div 
+                            onClick={() => window.location.href = category.href}
+                            className="block px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-md cursor-pointer"
+                          >
+                            {category.name}
+                          </div>
                         </li>
                       ))}
                       <li>
-                        <Link href="/products">
-                          <NavigationMenuLink 
-                            className="block px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-md font-semibold text-accent"
-                          >
-                            View All Products
-                          </NavigationMenuLink>
-                        </Link>
+                        <div 
+                          className="block px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-md font-semibold text-accent cursor-pointer"
+                          onClick={() => window.location.href = "/products"}
+                        >
+                          View All Products
+                        </div>
                       </li>
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
-                  <Link href="/about">
-                    <NavigationMenuLink 
-                      className={cn(
-                        "font-montserrat font-semibold hover:text-accent transition-colors",
-                        location === "/about" && "text-accent"
-                      )}
-                    >
-                      About Us
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink 
+                    className={cn(
+                      "font-montserrat font-semibold hover:text-accent transition-colors",
+                      location === "/about" && "text-accent"
+                    )}
+                    onClick={() => window.location.href = "/about"}
+                  >
+                    About Us
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
-                  <Link href="/contact">
-                    <NavigationMenuLink 
-                      className={cn(
-                        "font-montserrat font-semibold hover:text-accent transition-colors",
-                        location === "/contact" && "text-accent"
-                      )}
-                    >
-                      Contact
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink 
+                    className={cn(
+                      "font-montserrat font-semibold hover:text-accent transition-colors",
+                      location === "/contact" && "text-accent"
+                    )}
+                    onClick={() => window.location.href = "/contact"}
+                  >
+                    Contact
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
@@ -184,10 +182,13 @@ const Header = () => {
               )}
             </div>
             
-            <Button variant="ghost" size="icon" className="hover:text-accent transition-colors" asChild>
-              <Link href="/cart">
-                <ShoppingCart className="h-5 w-5" />
-              </Link>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hover:text-accent transition-colors"
+              onClick={() => window.location.href = "/cart"}
+            >
+              <ShoppingCart className="h-5 w-5" />
             </Button>
             
             <Sheet>
@@ -198,25 +199,48 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent>
                 <nav className="flex flex-col gap-4 mt-8">
-                  <Link href="/">
-                    <Button variant="ghost" className="w-full justify-start font-montserrat font-semibold">Home</Button>
-                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start font-montserrat font-semibold"
+                    onClick={() => window.location.href = "/"}
+                  >
+                    Home
+                  </Button>
                   <div className="flex flex-col gap-2">
-                    <Button variant="ghost" className="w-full justify-start font-montserrat font-semibold">Products</Button>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start font-montserrat font-semibold"
+                      onClick={() => window.location.href = "/products"}
+                    >
+                      Products
+                    </Button>
                     <div className="pl-4 flex flex-col gap-2">
                       {productCategories.map((category) => (
-                        <Link key={category.name} href={category.href}>
-                          <Button variant="ghost" className="w-full justify-start text-sm">{category.name}</Button>
-                        </Link>
+                        <Button 
+                          key={category.name}
+                          variant="ghost" 
+                          className="w-full justify-start text-sm"
+                          onClick={() => window.location.href = category.href}
+                        >
+                          {category.name}
+                        </Button>
                       ))}
                     </div>
                   </div>
-                  <Link href="/about">
-                    <Button variant="ghost" className="w-full justify-start font-montserrat font-semibold">About Us</Button>
-                  </Link>
-                  <Link href="/contact">
-                    <Button variant="ghost" className="w-full justify-start font-montserrat font-semibold">Contact</Button>
-                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start font-montserrat font-semibold"
+                    onClick={() => window.location.href = "/about"}
+                  >
+                    About Us
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start font-montserrat font-semibold"
+                    onClick={() => window.location.href = "/contact"}
+                  >
+                    Contact
+                  </Button>
                 </nav>
               </SheetContent>
             </Sheet>

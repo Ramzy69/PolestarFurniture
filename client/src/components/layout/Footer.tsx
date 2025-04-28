@@ -9,11 +9,14 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
-            <Link href="/" className="inline-block mb-6">
+            <div 
+              className="inline-block mb-6 cursor-pointer" 
+              onClick={() => window.location.href = "/"}
+            >
               <span className="text-2xl font-bold font-montserrat text-white">
                 POLESTAR<span className="text-accent">.</span>
               </span>
-            </Link>
+            </div>
             <p className="text-neutral-300 mb-6">
               Creating premium office furniture solutions that blend style, comfort, and functionality for the modern workplace.
             </p>
@@ -37,34 +40,52 @@ const Footer = () => {
             <h3 className="font-montserrat font-bold text-lg mb-6">Products</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/products?category=chairs" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=chairs"}
+                >
                   Office Chairs
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products?category=desks" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=desks"}
+                >
                   Desks & Tables
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products?category=conference" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=conference"}
+                >
                   Conference Solutions
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products?category=storage" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=storage"}
+                >
                   Storage Units
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products?category=workstations" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=workstations"}
+                >
                   Workstations
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products?category=reception" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products?category=reception"}
+                >
                   Reception Furniture
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -73,34 +94,52 @@ const Footer = () => {
             <h3 className="font-montserrat font-bold text-lg mb-6">Quick Links</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/about" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/about"}
+                >
                   About Us
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/solutions" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/solutions"}
+                >
                   Solutions
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/products" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/products"}
+                >
                   Catalog
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/projects" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/projects"}
+                >
                   Projects
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/contact" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/contact"}
+                >
                   Contact Us
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/blog" className="text-neutral-300 hover:text-accent transition-colors">
+                <span 
+                  className="text-neutral-300 hover:text-accent transition-colors cursor-pointer"
+                  onClick={() => window.location.href = "/blog"}
+                >
                   Blog
-                </Link>
+                </span>
               </li>
             </ul>
           </div>

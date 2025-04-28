@@ -60,10 +60,11 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-montserrat font-semibold text-lg">
-            <Link href={`/products/${product.slug}`}>
-              {product.name}
-            </Link>
+          <h3 
+            className="font-montserrat font-semibold text-lg cursor-pointer"
+            onClick={() => window.location.href = `/products/${product.slug}`}
+          >
+            {product.name}
           </h3>
           <div className="flex">
             {renderRating(product.rating || 0)}
